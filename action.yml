@@ -13,7 +13,8 @@ inputs:
     required: true
   version:
     description: 'Version to publish the Composer package as'
-    required: true
+    required: false
+    default: ''
   package-path:
     description: 'Path to package to upload, relative to repository root.'
     required: false
@@ -25,6 +26,9 @@ runs:
     - --repository=${{ inputs.repository }}
     - --username=${{ inputs.username }}
     - --password=${{ inputs.password }}
-    - --version=${{ inputs.version }}
   env:
     PACKAGE_PATH: ${{ inputs.package-path }}
+    VERSION: ${{ inputs.version }}
+    GITHUB_EVENT_NAME: ${{ github.event_name }}
+    GITHUB_REF_TYPE: ${{ github.ref_type }}
+    GITHUB_REF_NAME: ${{ github.ref_name }}

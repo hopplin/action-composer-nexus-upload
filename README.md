@@ -18,7 +18,12 @@ Simple PHP Script and Docker Image for uploading composer packages to a Nexus Re
 
 ## `version`
 
-**Required** Version to publish the Composer package as.
+Version to publish the Composer package as.
+
+If not specified, will autodectect:
+- If the push is for a pull request, will fail.
+- If the push is for a branch, will publish as "dev-branchname".
+- If the push is for a tag, will publish as the tag.
 
 ## `package-path`
 
@@ -32,11 +37,11 @@ None.
 
 ```markdown
 uses: TUDOCK/action-composer-nexus-upload@v1
+if: ${{ github.event_name == 'push' }}
 with:
   repository: 'https://...'
   username: 'me'
   password: ${{ secrets.password }}
-  version: '1.0.0'
 ```
 
 ## Files exclusion
