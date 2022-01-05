@@ -1,0 +1,30 @@
+# action.yml
+name: 'Publish Composer package'
+description: 'Publishes the composer package in the current directory to a (Nexus) repository.'
+inputs:
+  repository:
+    description: 'URL of the Nexus repository'
+    required: true
+  username:
+    description: 'Username'
+    required: true
+  password:
+    description: 'Password'
+    required: true
+  version:
+    description: 'Version to publish the Composer package as'
+    required: true
+  package-path:
+    description: 'Path to package to upload, relative to repository root.'
+    required: false
+    default: ''
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - --repository=${{ inputs.repository }}
+    - --username=${{ inputs.username }}
+    - --password=${{ inputs.password }}
+    - --version=${{ inputs.version }}
+  env:
+    PACKAGE_PATH: ${{ inputs.package-path }}

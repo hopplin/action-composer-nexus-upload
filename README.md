@@ -2,40 +2,47 @@
 
 Simple PHP Script and Docker Image for uploading composer packages to a Nexus Respository.
 
-## Usage
+## Inputs
 
-### Docker
+## `repository`
 
-```bash
-docker run -it -v $(pwd):/workspace jbuncle/composer-nexus-upload:latest nexus-upload \
-         --repository=https://example.nexus.repo.com/repository/composer-repo/ \
-         --username=publisher-user \
-         --password=$NEXUS_PASS \
-         --version=$CI_COMMIT_TAG
+**Required** URL of the Nexus repository.
+
+## `username`
+
+**Required** Username for authentification.
+
+## `password`
+
+**Required** Password for authentification.
+
+## `version`
+
+**Required** Version to publish the Composer package as.
+
+## `package-path`
+
+Path to package to upload, relative to repository root.
+
+## Outputs
+
+None.
+
+## Example usage
+
+```markdown
+uses: TUDOCK/action-composer-nexus-upload@v1
+with:
+  repository: 'https://...'
+  username: 'me'
+  password: ${{ secrets.password }}
+  version: '1.0.0'
 ```
-
-### Inline Bash
-
-```bash
-php <(curl -s https://raw.githubusercontent.com/jbuncle/composer-nexus-upload/master/nexus-upload.php) \
-         --repository=https://example.nexus.repo.com/repository/composer-repo/ \
-         --username=publisher-user \
-         --password=$NEXUS_PASS \
-         --version=$CI_COMMIT_TAG
-```
-
-## CLI Arguments
-
-| Argument   | Description                       |
-|------------|-----------------------------------|
-| repository | The nexus composer repository URL |
-| username   | The nexus user name               |
-| password   | The nexus user password           |
-| version    | The composer version              |
 
 ## Files exclusion
 
-To exclude files from the uploaded zip#
+To exclude files from the uploaded zip, add this to the `composer.json`
+of the package:
 
 ```json
 "extra": {
