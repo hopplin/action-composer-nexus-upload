@@ -18,4 +18,4 @@ fi
 echo "Publishing version $VERSION..."
 cd /github/workspace/"${PACKAGE_PATH}"
 
-exec "$@" "--version=$VERSION"
+exec "$@" "--version=${VERSION/\//-}"
