@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 if [[ -z "${VERSION}" ]]; then
   if [ "$GITHUB_EVENT_NAME" = "push" ]; then
     if [ "$GITHUB_REF_TYPE" = "branch" ]; then

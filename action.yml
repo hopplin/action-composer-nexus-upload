@@ -19,16 +19,33 @@ inputs:
     description: 'Path to package to upload, relative to repository root.'
     required: false
     default: ''
+  github-token:
+    description: The GitHub token used to create an authenticated client
+    default: ${{ github.token }}
+    required: false
+  github-event-name:
+    description: Github event name. You do not need to set this (just required because github. access isn't possible in the steps.)
+    default: ${{ github.event_name }}
+    required: false
+  github-ref-type:
+    description: Github ref type. You do not need to set this (just required because github. access isn't possible in the steps.)
+    default: ${{ github.ref_type }}
+    required: false
+  github-ref-name:
+    description: Github ref name. You do not need to set this (just required because github. access isn't possible in the steps.)
+    default: ${{ github.ref_name }}
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
+    - /usr/bin/nexus-upload
     - --repository=${{ inputs.repository }}
     - --username=${{ inputs.username }}
     - --password=${{ inputs.password }}
   env:
     PACKAGE_PATH: ${{ inputs.package-path }}
     VERSION: ${{ inputs.version }}
-    GITHUB_EVENT_NAME: ${{ github.event_name }}
-    GITHUB_REF_TYPE: ${{ github.ref_type }}
-    GITHUB_REF_NAME: ${{ github.ref_name }}
+    GITHUB_EVENT_NAME: ${{ inputs.github-event-name }}
+    GITHUB_REF_TYPE: ${{ inputs.github-ref-type }}
+    GITHUB_REF_NAME: ${{ inputs.github-ref-name }}
