@@ -5,13 +5,14 @@
  */
 
 /**
- * 
+ *
  * @param string $path
  * @param array $ignoreList
  *
  * @return boolean
  */
-function isIgnorebale($path, $ignoreList) {
+function isIgnorebale($path, $ignoreList)
+{
     foreach ($ignoreList as $pattern) {
         if (preg_match($pattern, $path)) {
             return true;
@@ -21,12 +22,13 @@ function isIgnorebale($path, $ignoreList) {
 }
 
 /**
- * 
- * @param string   $directory
- * @param string   $zipPath
+ *
+ * @param string $directory
+ * @param string $zipPath
  * @param callable $fileFilter
  */
-function zipDirectory($directory, $zipPath, $fileFilter) {
+function zipDirectory($directory, $zipPath, $fileFilter)
+{
     // Get real path for our folder
     $rootRealPath = realpath($directory);
 
@@ -37,8 +39,8 @@ function zipDirectory($directory, $zipPath, $fileFilter) {
 
     /** @var SplFileInfo[] $files */
     $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($rootRealPath),
-            RecursiveIteratorIterator::LEAVES_ONLY
+        new RecursiveDirectoryIterator($rootRealPath),
+        RecursiveIteratorIterator::LEAVES_ONLY
     );
 
     foreach ($files as $file) {
@@ -58,7 +60,8 @@ function zipDirectory($directory, $zipPath, $fileFilter) {
     $zipArchive->close();
 }
 
-function curlPutFile($url, $filename, $username, $password) {
+function curlPutFile($url, $filename, $username, $password)
+{
     $filestream = fopen($filename, "rb");
 
     $ch = curl_init();
@@ -82,7 +85,7 @@ function curlPutFile($url, $filename, $username, $password) {
 
     curl_close($ch);
 
-    if ($statusCode !== 200) {
+    if (str_starts_with((string)$statusCode, 2)) {
         throw new Exception("Failed to PUT file with response code $statusCode - '$result'");
     } else {
         return true;
@@ -96,7 +99,8 @@ function curlPutFile($url, $filename, $username, $password) {
  *
  * @return array
  */
-function getComposerJson() {
+function getComposerJson()
+{
     static $composerJsons;
     if (!isset($composerJson)) {
         $composerJsonPath = getcwd() . '/composer.json';
@@ -107,7 +111,8 @@ function getComposerJson() {
     return $composerJson;
 }
 
-function getComposerOptions() {
+function getComposerOptions()
+{
 
     $json = getComposerJson();
 
@@ -128,27 +133,29 @@ function getComposerOptions() {
  *
  * @return string
  */
-function getCliOptions() {
+function getCliOptions()
+{
     static $options;
     if (!isset($options)) {
         // Followed by single colon = required
         // Followed by double colon = optional
         $options = getopt(
-                '',
-                [
-                    'repository:',
-                    'username:',
-                    'password::',
-                    'version:',
-                    'ignore:',
-                ]
+            '',
+            [
+                'repository:',
+                'username:',
+                'password::',
+                'version:',
+                'ignore:',
+            ]
         );
     }
 
     return $options;
 }
 
-function getProperties() {
+function getProperties()
+{
     $filepath = getcwd() . DIRECTORY_SEPARATOR . ".nexus";
     if (!file_exists($filepath)) {
         return [];
@@ -170,7 +177,8 @@ function getProperties() {
     return $options;
 }
 
-function getOption($option) {
+function getOption($option)
+{
     static $options;
     if (!isset($options)) {
         $cliOptions = getCliOptions();
@@ -178,9 +186,9 @@ function getOption($option) {
         $properties = getProperties();
 
         $options = array_merge(
-                $properties,
-                $composerOptions,
-                $cliOptions
+            $properties,
+            $composerOptions,
+            $cliOptions
         );
     }
     if (!array_key_exists($option, $options)) {
@@ -209,7 +217,7 @@ if (is_array($ignore)) {
 
 
 // Process
-$ignoreList = array_map(function($value) {
+$ignoreList = array_map(function ($value) {
     if ($value === null) {
         return false;
     }
@@ -246,7 +254,7 @@ $projectDir = getcwd();
 $zipFileName = $projectDir . DIRECTORY_SEPARATOR . str_replace('/', '-', $packageName) . '-' . $version . '.zip';
 
 echo "Zipping '{$projectDir}' as '$zipFileName'\n";
-zipDirectory($projectDir, $zipFileName, function($path) use ($ignoreList) {
+zipDirectory($projectDir, $zipFileName, function ($path) use ($ignoreList) {
     if (isIgnorebale($path, $ignoreList)) {
         return false;
     }
