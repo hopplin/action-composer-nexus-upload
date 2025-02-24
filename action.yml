@@ -1,6 +1,9 @@
 # action.yml
-name: 'Publish Composer package'
-description: 'Publishes the composer package in the current directory to a (Nexus) repository.'
+name: 'Publish Composer package to Nexus'
+description: 'Publishes the composer package in the current directory to a Nexus repository. (composer community plugin required)'
+branding:
+  icon: 'upload'
+  color: 'green'
 inputs:
   repository:
     description: 'URL of the Nexus repository'
