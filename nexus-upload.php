@@ -75,21 +75,15 @@ function curlPutFile($url, $filename, $username, $password)
     curl_setopt($ch, CURLOPT_PUT, 1);
     curl_setopt($ch, CURLOPT_INFILE, $filestream);
     curl_setopt($ch, CURLOPT_INFILESIZE, filesize($filename));
-
-    // Enable headers
     curl_setopt($ch, CURLOPT_HEADER, 1);
 
-    $result = curl_exec($ch);
-
-    $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
+    curl_exec($ch);
+    if (curl_errno($ch)) {
+        throw new Exception("Failed to PUT file: " . curl_error($ch));
+    }
     curl_close($ch);
 
-    if (str_starts_with((string)$statusCode, 2)) {
-        throw new Exception("Failed to PUT file with response code $statusCode - '$result'");
-    } else {
-        return true;
-    }
+    return true;
 }
 
 /**
