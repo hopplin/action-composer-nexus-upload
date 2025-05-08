@@ -16,16 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker container
+      - name: Validate composer.json and composer.lock
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
             -w /app \
-            php:8.2-cli \
+            composer:2 \
             composer validate --strict
 
-      - name: Cache Composer packages (not used inside container)
-        # Optional: only works if host cache is mounted into container
+      - name: Cache Composer packages (host-side only)
         uses: actions/cache@v3
         with:
           path: vendor
@@ -33,15 +32,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Install dependencies in container
+      - name: Install dependencies
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/app \
             -w /app \
-            php:8.2-cli \
-            sh -c "apt-get update && apt-get install -y unzip git && \
-                   curl -sS https://getcomposer.org/installer | php && \
-                   php composer.phar install --prefer-dist --no-progress"
+            composer:2 \
+            composer install --prefer-dist --no-progress
 
       # Optional: Run test suite (you must make sure dependencies like phpunit exist in image or vendor/)
       # - name: Run test suite
