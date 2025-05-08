@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Validate with Composer
 
 on:
   push:
@@ -11,29 +11,43 @@ permissions:
 
 jobs:
   build:
-
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Set up Docker container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            php:8.2-cli \
+            composer validate --strict
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+      - name: Cache Composer packages (not used inside container)
+        # Optional: only works if host cache is mounted into container
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Install dependencies in container
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            php:8.2-cli \
+            sh -c "apt-get update && apt-get install -y unzip git && \
+                   curl -sS https://getcomposer.org/installer | php && \
+                   php composer.phar install --prefer-dist --no-progress"
 
-    # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
-    # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-    # - name: Run test suite
-    #   run: composer run-script test
+      # Optional: Run test suite (you must make sure dependencies like phpunit exist in image or vendor/)
+      # - name: Run test suite
+      #   run: |
+      #     docker run --rm \
+      #       -v ${{ github.workspace }}:/app \
+      #       -w /app \
+      #       php:8.2-cli \
+      #       vendor/bin/phpunit
